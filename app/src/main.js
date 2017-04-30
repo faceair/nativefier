@@ -4,7 +4,6 @@ import path from 'path';
 import { app, crashReporter } from 'electron';
 import electronDownload from 'electron-dl';
 
-import createLoginWindow from './components/login/loginWindow';
 import createMainWindow from './components/mainWindow/mainWindow';
 import helpers from './helpers/helpers';
 import inferFlash from './helpers/inferFlash';
@@ -75,12 +74,6 @@ if (appArgs.crashReporter) {
 
 app.on('ready', () => {
   mainWindow = createMainWindow(appArgs, app.quit, setDockBadge);
-});
-
-app.on('login', (event, webContents, request, authInfo, callback) => {
-    // for http authentication
-  event.preventDefault();
-  createLoginWindow(callback);
 });
 
 if (appArgs.singleInstance) {
