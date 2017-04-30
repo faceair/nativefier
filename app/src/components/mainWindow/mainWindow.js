@@ -175,27 +175,22 @@ function createMainWindow(inpOptions, onAppQuit, setDockBadge) {
     mainWindow.webContents.send('params', JSON.stringify(options));
   });
 
+  let badgeCount = 0;
+  ipcMain.on('notification', () => {
+    if (!isOSX() || mainWindow.isFocused()) {
+      return;
+    }
   if (options.counter) {
-    mainWindow.on('page-title-updated', (e, title) => {
-      const itemCountRegex = /[([{](\d*?)[}\])]/;
-      const match = itemCountRegex.exec(title);
-      if (match) {
-        setDockBadge(match[1]);
-      } else {
-        setDockBadge('');
-      }
-    });
+    badgeCount += 1;
   } else {
-    ipcMain.on('notification', () => {
-      if (!isOSX() || mainWindow.isFocused()) {
-        return;
-      }
-      setDockBadge('•');
-    });
-    mainWindow.on('focus', () => {
-      setDockBadge('');
-    });
+    badgeCount = '•';
   }
+    setDockBadge(String(badgeCount));
+  });
+  mainWindow.on('focus', () => {
+    badgeCount = 0;
+    setDockBadge('');
+  });
 
   mainWindow.webContents.on('new-window', (event, urlToGo) => {
     if (mainWindow.useDefaultWindowBehaviour) {
